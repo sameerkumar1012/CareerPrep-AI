@@ -3,18 +3,13 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 
-# ---------------------------------------------------
-# PAGE CONFIG
-# ---------------------------------------------------
+
 st.set_page_config(
     page_title="AI Career Copilot",
-    page_icon="🤖",
     layout="wide"
 )
 
-# ---------------------------------------------------
-# CUSTOM CSS
-# ---------------------------------------------------
+
 st.markdown("""
 <style>
 
@@ -57,48 +52,40 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------------------------------------------
+
 # LOAD EMBEDDINGS
-# ---------------------------------------------------
+
 embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
-# ---------------------------------------------------
-# LOAD FAISS VECTOR DB
-# ---------------------------------------------------
+
+# LOAD VECTOR DB
+
 db = FAISS.load_local(
     "vectorstore",
     embeddings,
     allow_dangerous_deserialization=True
 )
 
-# ---------------------------------------------------
-# LOAD GROQ MODEL
-# ---------------------------------------------------
+
 llm = ChatGroq(
     groq_api_key=os.getenv("GROQ_API_KEY"),
     model_name="llama-3.3-70b-versatile",
     temperature=0.3
 )
 
-# ---------------------------------------------------
-# SESSION STATE
-# ---------------------------------------------------
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ---------------------------------------------------
-# TITLE
-# ---------------------------------------------------
+
 st.markdown(
     '<div class="main-title">🤖 AI Career Copilot</div>',
     unsafe_allow_html=True
 )
 
-# ---------------------------------------------------
-# DISPLAY CHAT HISTORY
-# ---------------------------------------------------
+
 for msg in st.session_state.messages:
 
     if msg["role"] == "user":
@@ -123,16 +110,14 @@ for msg in st.session_state.messages:
             unsafe_allow_html=True
         )
 
-# ---------------------------------------------------
 # CHAT INPUT
-# ---------------------------------------------------
+
 query = st.chat_input(
     "Ask anything about your resume, projects, SQL, DSA, AWS..."
 )
 
-# ---------------------------------------------------
-# HANDLE QUERY
-# ---------------------------------------------------
+#Queery
+
 if query:
 
     # Save User Message
@@ -172,10 +157,10 @@ if query:
     Answer:
     """
 
-    # Generate Response
+    
     response = llm.invoke(prompt).content
 
-    # Save AI Response
+    
     st.session_state.messages.append(
         {
             "role": "assistant",
@@ -183,5 +168,5 @@ if query:
         }
     )
 
-    # Refresh UI
+    
     st.rerun()
